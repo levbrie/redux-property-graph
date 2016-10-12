@@ -1,0 +1,30 @@
+{
+  "name": "redux-property-graph",
+  "version": "0.1.1",
+  "description": "Basic property graph for redux",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --presets babel-preset-es2015 --out-dir lib",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leviathantech/redux-property-graph.git"
+  },
+  "keywords": [
+    "redux",
+    "graph"
+  ],
+  "author": "Sam Jayasinghe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leviathantech/redux-property-graph/issues"
+  },
+  "homepage": "https://github.com/leviathantech/redux-property-graph#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0"
+  }
+}
