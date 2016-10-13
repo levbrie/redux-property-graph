@@ -24,7 +24,7 @@ store.dispatch(addNode({ id: '1', name: 'Sam' }, 'Person'))
 
 // addEdge(source, label, target, properties)
 // source and target objects must contain ids
-store.dispatch(addNode({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 }))
+store.dispatch(addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 }))
 
 // removeNode(object)
 store.dispatch(removeNode({ id: '1' }))
