@@ -15,7 +15,7 @@ const store = createStore(rootReducer)
 
 
 ```javascript
-import { addNode, addEdge, removeNode, unlinkNode } from 'redux-property-graph'
+import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from 'redux-property-graph'
 
 // addNode(object, label(s))
 // object must contain an id property
@@ -31,4 +31,7 @@ store.dispatch(removeNode({ id: '1' }))
 
 // unlinkNode(object)
 store.dispatch(unlinkNode({ id: '1' }))
+
+// unlinkTwo(object1, object2)
+store.dispatch(unlinkTwo({ id: '1' }, { id: '2' }))
 ```

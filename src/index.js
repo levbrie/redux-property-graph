@@ -1,5 +1,5 @@
 import uuid from 'node-uuid';
-import { ADD_NODE, ADD_EDGE, REMOVE_NODE, UNLINK_NODE } from './ActionTypes';
+import { ADD_NODE, ADD_EDGE, REMOVE_NODE, UNLINK_NODE, UNLINK_TWO } from './ActionTypes';
 
 const _ = {
   transform: require('lodash.transform'),
@@ -12,6 +12,7 @@ export const addNode = makeActionCreator(ADD_NODE, 'properties', 'labels');
 export const addEdge = makeActionCreator(ADD_EDGE, 'source', 'label', 'target', 'properties');
 export const removeNode = makeActionCreator(REMOVE_NODE, 'properties');
 export const unlinkNode = makeActionCreator(UNLINK_NODE, 'properties');
+export const unlinkTwo = makeActionCreator(UNLINK_TWO, 'first', 'second');
 
 const emptyGraph = {
   nodes: {},
@@ -35,6 +36,8 @@ function createGraphReducer(config = { idPropertyName: 'id' }) {
         return reduceRemoveNode();
       case UNLINK_NODE:
         return reduceUnlinkNode();
+      case UNLINK_TWO:
+        return reduceUnlinkTwo();
       default:
         return state; 
     }
@@ -92,11 +95,12 @@ function createGraphReducer(config = { idPropertyName: 'id' }) {
     }
 
     function unlinkNode(nodeId) {
+      // TODO: prevent recreating edge list when node is not linked.
       return {
         edges: _.omit(
           state.edges,
           _.transform(state.edgeMap[nodeId], function(result, v, k) {
-            v.forEach(edge => { result.push(edge); });
+            v.forEach(edgeId => { result.push(edgeId); });
             return result;
           }, [])
         ),
@@ -105,6 +109,53 @@ function createGraphReducer(config = { idPropertyName: 'id' }) {
             return result;
           } else if (nodeId in v) {
             const newEdges = _.omit(v, [nodeId]);
+            if (Object.keys(newEdges).length) {
+              result[k] = newEdges;
+            }
+            return result;
+          }
+          result[k] = v;
+          return result;
+        }, {})
+      };
+    }
+
+    function reduceUnlinkTwo() {
+      const firstId = action.first[config.idPropertyName];
+      const secondId = action.second[config.idPropertyName];
+      return {
+        ...state,
+        ...unlinkTwo(firstId, secondId)
+      }
+    }
+
+    function unlinkTwo(firstId, secondId) {
+      // TODO: prevent recreating edge list when nodes are not linked.
+      return {
+        edges: _.omit(
+          state.edges,
+          _.transform(state.edgeMap[firstId], function(result, v, k) {
+            v.forEach(edgeId => {
+              const edge = state.edges[edgeId];
+              const source = edge.source[config.idPropertyName];
+              const target = edge.target[config.idPropertyName];
+              if ((source === firstId && target === secondId)
+                || (source === secondId && target === firstId)) {
+                result.push(edgeId);
+              }
+            });
+            return result;
+          }, [])
+        ),
+        edgeMap: _.transform(state.edgeMap, function(result, v, k) {
+          if (k === firstId && secondId in v) {
+            const newEdges = _.omit(v, [secondId]);
+            if (Object.keys(newEdges).length) {
+              result[k] = newEdges;
+            }
+            return result;
+          } else if (k === secondId && firstId in v) {
+            const newEdges = _.omit(v, [firstId]);
             if (Object.keys(newEdges).length) {
               result[k] = newEdges;
             }

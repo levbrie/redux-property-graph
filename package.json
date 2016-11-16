@@ -1,11 +1,11 @@
 {
   "name": "redux-property-graph",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "Basic property graph for redux",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register test/*.spec.js",
-    "build": "babel src --presets babel-preset-es2015 --out-dir lib",
+    "build": "babel src --presets babel-preset-es2015 --out-dir .",
     "prepublish": "npm run build"
   },
   "repository": {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import createGraphReducer, { addNode, addEdge, removeNode, unlinkNode } from '../src';
+import createGraphReducer, { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from '../src';
 
 const objectValues = (obj) => {
   return Object.keys(obj).map(function(key) {
@@ -132,6 +132,50 @@ const stateWithTwoNodesAndTwoEdges = Object.freeze({
   }
 });
 
+const stateWithThreeNodesAndOneEdge = Object.freeze({
+  nodes: {
+    '1': {
+      id: '1',
+      labels: ['Person'],
+      properties: {
+        id: '1',
+        name: 'Sam'
+      }
+    },
+    '2': {
+      id: '2',
+      labels: ['Person'],
+      properties: {
+        id: '2',
+        name: 'Lev'
+      }
+    },
+    '3': {
+      id: '3',
+      labels: ['Person'],
+      properties: {
+        id: '3',
+        name: 'Steven'
+      }
+    }
+  },
+  edges: {
+    'edge1': {
+      id: 'edge1',
+      source: { id: '1' },
+      target: { id: '2' },
+      label: 'KNOWS',
+      properties: {
+        since: 2015
+      }
+    }
+  },
+  edgeMap: {
+    '1': { '2': ['edge1'] },
+    '2': { '1': ['edge1'] }
+  }
+});
+
 const stateWithThreeNodesAndTwoEdges = Object.freeze({
   nodes: {
     '1': {
@@ -243,6 +287,11 @@ describe('reducer', () => {
   it('should handle unlinkNode by removing edges', () => {
     expect(graphReducer(stateWithTwoNodesAndTwoEdges, unlinkNode({ id: '1' })))
     .to.deep.equal(stateWithTwoNodes);
+  });
+
+  it('should handle unlinkTwo by removing edges between two nodes', () => {
+    expect(graphReducer(stateWithThreeNodesAndTwoEdges, unlinkTwo({ id: '2' }, { id: '3' })))
+    .to.deep.equal(stateWithThreeNodesAndOneEdge);
   });
 
 });
