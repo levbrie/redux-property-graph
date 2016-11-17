@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import createGraphReducer, { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from '../src';
+import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from '../src/ActionCreators';
+
+const graphReducer = require('../src')({ idPropertyName: 'id' }).default;
 
 const objectValues = (obj) => {
   return Object.keys(obj).map(function(key) {
@@ -231,7 +233,6 @@ const stateWithThreeNodesAndTwoEdges = Object.freeze({
 });
 
 describe('reducer', () => {
-  const graphReducer = createGraphReducer({ idPropertyName: 'id' });
 
   it('should handle initial state', () => {
     expect(graphReducer(undefined, {}))

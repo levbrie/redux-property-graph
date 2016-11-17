@@ -2,10 +2,9 @@
 Basic property graph for redux. Note: This module is under development and not ready for use.
 
 ```javascript
-import createGraphReducer from 'redux-property-graph'
 
 // Reducer must be initialized with a unique id property name for nodes
-const graph = createGraphReducer({ idPropertyName: 'id' })
+const graph = require('redux-property-graph')({ idPropertyName: 'id' }).default
 
 const rootReducer = combineReducers({
   graph
@@ -15,7 +14,7 @@ const store = createStore(rootReducer)
 
 
 ```javascript
-import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from 'redux-property-graph'
+import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from 'redux-property-graph/ActionCreators'
 
 // addNode(object, label(s))
 // object must contain an id property
@@ -34,4 +33,12 @@ store.dispatch(unlinkNode({ id: '1' }))
 
 // unlinkTwo(object1, object2)
 store.dispatch(unlinkTwo({ id: '1' }, { id: '2' }))
+
+
+const { getEdgeWithLabelBetween } = require('redux-property-graph')({ idPropertyName: 'id' })
+
+getEdgeWithLabelBetween(graph, label, start, end)
+
+getEdgesBetween(graph, start, end)
+
 ```

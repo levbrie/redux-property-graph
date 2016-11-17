@@ -6,13 +6,10 @@ const _ = {
   omit: require('lodash.omit')
 };
 
-export default createGraphReducer;
-
-export const addNode = makeActionCreator(ADD_NODE, 'properties', 'labels');
-export const addEdge = makeActionCreator(ADD_EDGE, 'source', 'label', 'target', 'properties');
-export const removeNode = makeActionCreator(REMOVE_NODE, 'properties');
-export const unlinkNode = makeActionCreator(UNLINK_NODE, 'properties');
-export const unlinkTwo = makeActionCreator(UNLINK_TWO, 'first', 'second');
+module.exports = (config = { idPropertyName: 'id' }) => ({
+  ...utilityFunctions(config),
+  default: createGraphReducer(config)
+});
 
 const emptyGraph = {
   nodes: {},
@@ -20,7 +17,7 @@ const emptyGraph = {
   edgeMap: {}
 };
 
-function createGraphReducer(config = { idPropertyName: 'id' }) {
+function createGraphReducer(config) {
 
   const getNodeId = (node) => {
     return node[config.idPropertyName];
@@ -183,12 +180,33 @@ function getNewEdgeMap(currentMap, edgeId, sourceId, targetId) {
   };
 }
 
-function makeActionCreator(type, ...argNames) {
-  return (...args) => {
-    const action = { type };
-    argNames.forEach((arg, index) => {
-      action[argNames[index]] = args[index];
-    });
-    return action;
+function utilityFunctions(config) {
+  const { idPropertyName } = config;
+
+  return {
+    getEdgesBetween,
+    getEdgeWithLabelBetween
   };
+
+  function getEdgeWithLabelBetween(graph, label, start, end) {
+    const existingEdges = getEdges(graph, start, end);
+    const filtered = existingEdges.filter(function(edge) {
+      return edge.label === label;
+    });
+    if (filtered.length) {
+      return filtered[0];
+    }
+    return null;
+  }
+
+  function getEdgesBetween(graph, start, end) {
+    if (start[idPropertyName] in graph.edgeMap
+        && end[idPropertyName] in graph.edgeMap[start[idPropertyName]]) {
+      const edgeList = graph.edgeMap[start[idPropertyName]][end[idPropertyName]];
+      return edgeList.map(function(edgeId) {
+        return graph.edges[edgeId];
+      });
+    }
+    return [];
+  }
 }
