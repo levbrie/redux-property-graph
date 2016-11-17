@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from '../src/ActionCreators';
 
-const graphReducer = require('../src')({ idPropertyName: 'id' }).default;
+const { default: graphReducer, getEdgeWithLabelBetween } = require('../src')({ idPropertyName: 'id' });
 
 const objectValues = (obj) => {
   return Object.keys(obj).map(function(key) {
@@ -293,6 +293,15 @@ describe('reducer', () => {
   it('should handle unlinkTwo by removing edges between two nodes', () => {
     expect(graphReducer(stateWithThreeNodesAndTwoEdges, unlinkTwo({ id: '2' }, { id: '3' })))
     .to.deep.equal(stateWithThreeNodesAndOneEdge);
+  });
+
+});
+
+describe('getEdgeWithLabelBetween', () => {
+
+  it('should return edge', () => {
+    expect(getEdgeWithLabelBetween(stateWithTwoNodesAndTwoEdges, 'KNOWS', { id: '1' }, { id: '2' }))
+    .to.equal(stateWithTwoNodesAndTwoEdges.edges['edge1']);
   });
 
 });

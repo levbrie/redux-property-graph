@@ -189,7 +189,7 @@ function utilityFunctions(config) {
   };
 
   function getEdgeWithLabelBetween(graph, label, start, end) {
-    const existingEdges = getEdges(graph, start, end);
+    const existingEdges = getEdgesBetween(graph, start, end);
     const filtered = existingEdges.filter(function(edge) {
       return edge.label === label;
     });
