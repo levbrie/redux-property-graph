@@ -185,7 +185,8 @@ function utilityFunctions(config) {
 
   return {
     getEdgesBetween,
-    getEdgeWithLabelBetween
+    getEdgeWithLabelBetween,
+    getEdges,
   };
 
   function getEdgeWithLabelBetween(graph, label, start, end) {
@@ -208,5 +209,13 @@ function utilityFunctions(config) {
       });
     }
     return [];
+  }
+
+  function getEdges(graph, obj) {
+    return _.transform(graph.edgeMap[obj[idPropertyName]], (result, v, k) => {
+      const edge = graph.edges[v];
+      result.push(edge);
+      return result;
+    }, []);
   }
 }
