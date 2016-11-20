@@ -1,6 +1,6 @@
 {
   "name": "redux-property-graph",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Basic property graph for redux",
   "main": "index.js",
   "scripts": {
