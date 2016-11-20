@@ -1,5 +1,8 @@
 import uuid from 'node-uuid';
-import { ADD_NODE, ADD_EDGE, REMOVE_NODE, UNLINK_NODE, UNLINK_TWO } from './ActionTypes';
+import {
+  ADD_NODE, ADD_EDGE, MODIFY_NODE,
+  REMOVE_NODE, UNLINK_NODE, UNLINK_TWO
+} from './ActionTypes';
 
 const _ = {
   transform: require('lodash.transform'),
@@ -29,6 +32,8 @@ function createGraphReducer(config) {
         return reduceAddNode();
       case ADD_EDGE:
         return reduceAddEdge();
+      case MODIFY_NODE:
+        return reduceModifyNode();
       case REMOVE_NODE:
         return reduceRemoveNode();
       case UNLINK_NODE:
@@ -71,6 +76,26 @@ function createGraphReducer(config) {
           }
         },
         edgeMap: getNewEdgeMap(state.edgeMap, edgeId, sourceId, targetId)
+      };
+    }
+
+    function reduceModifyNode() {
+      const nodeId = getNodeId(action.properties);
+      const existing = state.nodes[nodeId];
+      return {
+        ...state,
+        nodes: {
+          ...state.nodes,
+          [nodeId]: {
+            ...existing,
+            labels: !action.labels && existing.labels ||
+              (typeof action.labels === 'string' ? [action.labels] : action.labels),
+            properties: {
+              ...existing.properties,
+              ...action.properties
+            }
+          }
+        }
       };
     }
 

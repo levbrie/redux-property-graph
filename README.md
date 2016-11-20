@@ -14,7 +14,10 @@ const store = createStore(rootReducer)
 
 
 ```javascript
-import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from 'redux-property-graph/ActionCreators'
+import {
+  addNode, addEdge, modifyNode,
+  removeNode, unlinkNode, unlinkTwo
+} from 'redux-property-graph/ActionCreators'
 
 // addNode(object, label(s))
 // object must contain an id property
@@ -24,6 +27,9 @@ store.dispatch(addNode({ id: '1', name: 'Sam' }, 'Person'))
 // addEdge(source, label, target, properties)
 // source and target objects must contain ids
 store.dispatch(addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 }))
+
+// modifyNode(newProperties, label(s))
+store.dispatch(modifyNode({ id: '1', name: 'Samurdha' }, 'Human'))
 
 // removeNode(object)
 store.dispatch(removeNode({ id: '1' }))

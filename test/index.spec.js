@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { addNode, addEdge, removeNode, unlinkNode, unlinkTwo } from '../src/ActionCreators';
+import { addNode, addEdge, modifyNode, removeNode, unlinkNode, unlinkTwo } from '../src/ActionCreators';
 
 const { default: graphReducer, getEdgeWithLabelBetween } = require('../src')({ idPropertyName: 'id' });
 
@@ -272,6 +272,24 @@ describe('reducer', () => {
     expect(newState.edgeMap).to.deep.equal({
       '1': { '2': [newEdge.id, oldEdge.id] },
       '2': { '1': [newEdge.id, oldEdge.id] }
+    });
+  });
+
+  it('should handle modifyNode', () => {
+    expect(graphReducer(stateWithOneNode, modifyNode({ id: '1', name: 'Samurdha' }, 'Human')))
+    .to.deep.equal({
+      nodes: {
+        '1': {
+          id: '1',
+          labels: ['Human'],
+          properties: {
+            id: '1',
+            name: 'Samurdha'
+          }
+        }
+      },
+      edges: {},
+      edgeMap: {}
     });
   });
 
