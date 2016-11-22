@@ -22,24 +22,27 @@ import {
 // addNode(object, label(s))
 // object must contain an id property
 // label(s) can be a single string or an array of labels
-store.dispatch(addNode({ id: '1', name: 'Sam' }, 'Person'))
+addNode({ id: '1', name: 'Sam' }, 'Person')
 
 // addEdge(source, label, target, properties)
 // source and target objects must contain ids
-store.dispatch(addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 }))
+addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 })
+addEdge('1', 'KNOWS', '2', { since: 2015 })
 
 // modifyNode(newProperties, label(s))
-store.dispatch(modifyNode({ id: '1', name: 'Samurdha' }, 'Human'))
+modifyNode({ id: '1', name: 'Samurdha' }, 'Human')
 
 // removeNode(object)
-store.dispatch(removeNode({ id: '1' }))
+removeNode({ id: '1' })
+removeNode('1')
 
 // unlinkNode(object)
-store.dispatch(unlinkNode({ id: '1' }))
+unlinkNode({ id: '1' })
+unlinkNode('1')
 
 // unlinkTwo(object1, object2)
-store.dispatch(unlinkTwo({ id: '1' }, { id: '2' }))
-
+unlinkTwo({ id: '1' }, { id: '2' })
+unlinkTwo('1', '2')
 
 const { getEdgeWithLabelBetween } = require('redux-property-graph')({ idPropertyName: 'id' })
 

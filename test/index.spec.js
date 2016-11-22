@@ -244,35 +244,46 @@ describe('reducer', () => {
     .to.deep.equal(stateWithOneNode);
   });
 
-  it('should handle addEdge by creating edge between existing nodes', () => {
-    const action = addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 });
-    const newState = graphReducer(stateWithTwoNodes, action);
-    const newEdge = objectValues(newState.edges)[0];
-    const expectedEdge = stateWithTwoNodesAndOneEdge.edges['edge1'];
-    expect(newEdge.properties).to.deep.equal(expectedEdge.properties);
-    expect(newEdge.label).to.equal(expectedEdge.label);
-    expect(newEdge.source).to.deep.equal(expectedEdge.source);
-    expect(newEdge.target).to.deep.equal(expectedEdge.target);
-    expect(newState.edgeMap).to.deep.equal({
-      '1': { '2': [newEdge.id] },
-      '2': { '1': [newEdge.id] }
-    });
-  });
+  describe('addEdge', () => {
 
-  it('should handle adding a second edge between existing nodes', () => {
-    const action = addEdge({ id: '1' }, 'WORKS_WITH', { id: '2' }, { since: 2015 });
-    const newState = graphReducer(stateWithTwoNodesAndOneEdge, action);
-    const oldEdge = objectValues(newState.edges).filter(edge => edge.label === 'KNOWS')[0];
-    const newEdge = objectValues(newState.edges).filter(edge => edge.label === 'WORKS_WITH')[0];
-    const expectedEdge = stateWithTwoNodesAndTwoEdges.edges['edge2'];
-    expect(newEdge.properties).to.deep.equal(expectedEdge.properties);
-    expect(newEdge.label).to.equal(expectedEdge.label);
-    expect(newEdge.source).to.deep.equal(expectedEdge.source);
-    expect(newEdge.target).to.deep.equal(expectedEdge.target);
-    expect(newState.edgeMap).to.deep.equal({
-      '1': { '2': [newEdge.id, oldEdge.id] },
-      '2': { '1': [newEdge.id, oldEdge.id] }
+    const runTest = (action) => {
+      const newState = graphReducer(stateWithTwoNodes, action);
+      const newEdge = objectValues(newState.edges)[0];
+      const expectedEdge = stateWithTwoNodesAndOneEdge.edges['edge1'];
+      expect(newEdge.properties).to.deep.equal(expectedEdge.properties);
+      expect(newEdge.label).to.equal(expectedEdge.label);
+      expect(newEdge.source).to.deep.equal(expectedEdge.source);
+      expect(newEdge.target).to.deep.equal(expectedEdge.target);
+      expect(newState.edgeMap).to.deep.equal({
+        '1': { '2': [newEdge.id] },
+        '2': { '1': [newEdge.id] }
+      });
+    };
+
+    it('should handle objects as arguments', () => {
+      runTest(addEdge({ id: '1' }, 'KNOWS', { id: '2' }, { since: 2015 }));
     });
+
+    it('should handle ids as arguments', () => {
+      runTest(addEdge('1', 'KNOWS', '2', { since: 2015 }));
+    });
+
+    it('should handle adding a second edge between existing nodes', () => {
+      const action = addEdge({ id: '1' }, 'WORKS_WITH', { id: '2' }, { since: 2015 });
+      const newState = graphReducer(stateWithTwoNodesAndOneEdge, action);
+      const oldEdge = objectValues(newState.edges).filter(edge => edge.label === 'KNOWS')[0];
+      const newEdge = objectValues(newState.edges).filter(edge => edge.label === 'WORKS_WITH')[0];
+      const expectedEdge = stateWithTwoNodesAndTwoEdges.edges['edge2'];
+      expect(newEdge.properties).to.deep.equal(expectedEdge.properties);
+      expect(newEdge.label).to.equal(expectedEdge.label);
+      expect(newEdge.source).to.deep.equal(expectedEdge.source);
+      expect(newEdge.target).to.deep.equal(expectedEdge.target);
+      expect(newState.edgeMap).to.deep.equal({
+        '1': { '2': [newEdge.id, oldEdge.id] },
+        '2': { '1': [newEdge.id, oldEdge.id] }
+      });
+    });
+
   });
 
   it('should handle modifyNode', () => {
@@ -293,32 +304,64 @@ describe('reducer', () => {
     });
   });
 
-  it('should handle removeNode by removing a node', () => {
-    expect(graphReducer(stateWithTwoNodes, removeNode({ id: '2' })))
-    .to.deep.equal(stateWithOneNode);
+  describe('removeNode', () => {
+
+    it('should handle objects as arguments', () => {
+      expect(graphReducer(stateWithTwoNodes, removeNode({ id: '2' })))
+      .to.deep.equal(stateWithOneNode);
+    });
+
+    it('should handle ids as arguments', () => {
+      expect(graphReducer(stateWithTwoNodes, removeNode('2')))
+      .to.deep.equal(stateWithOneNode);
+    });
+
+    it('should remove edges when removing a node', () => {
+      expect(graphReducer(stateWithThreeNodesAndTwoEdges, removeNode({ id: '3' })))
+      .to.deep.equal(stateWithTwoNodesAndOneEdge);
+    });
+    
   });
 
-  it('should remove edges when removing a node', () => {
-    expect(graphReducer(stateWithThreeNodesAndTwoEdges, removeNode({ id: '3' })))
-    .to.deep.equal(stateWithTwoNodesAndOneEdge);
+  describe('unlinkNode', () => {
+
+    it('should handle objects as arguments', () => {
+      expect(graphReducer(stateWithTwoNodesAndTwoEdges, unlinkNode({ id: '1' })))
+      .to.deep.equal(stateWithTwoNodes);
+    });
+
+    it('should handle ids as arguments', () => {
+      expect(graphReducer(stateWithTwoNodesAndTwoEdges, unlinkNode('1')))
+      .to.deep.equal(stateWithTwoNodes);
+    });
+
   });
 
-  it('should handle unlinkNode by removing edges', () => {
-    expect(graphReducer(stateWithTwoNodesAndTwoEdges, unlinkNode({ id: '1' })))
-    .to.deep.equal(stateWithTwoNodes);
-  });
+  describe('unlinkTwo', () => {
 
-  it('should handle unlinkTwo by removing edges between two nodes', () => {
-    expect(graphReducer(stateWithThreeNodesAndTwoEdges, unlinkTwo({ id: '2' }, { id: '3' })))
-    .to.deep.equal(stateWithThreeNodesAndOneEdge);
+    it('should handle objects as arguments', () => {
+      expect(graphReducer(stateWithThreeNodesAndTwoEdges, unlinkTwo({ id: '2' }, { id: '3' })))
+      .to.deep.equal(stateWithThreeNodesAndOneEdge);
+    });
+
+    it('should handle ids as arguments', () => {
+      expect(graphReducer(stateWithThreeNodesAndTwoEdges, unlinkTwo('2', '3')))
+      .to.deep.equal(stateWithThreeNodesAndOneEdge);
+    });
+    
   });
 
 });
 
 describe('getEdgeWithLabelBetween', () => {
 
-  it('should return edge', () => {
+  it('should handle objects as arguments', () => {
     expect(getEdgeWithLabelBetween(stateWithTwoNodesAndTwoEdges, 'KNOWS', { id: '1' }, { id: '2' }))
+    .to.equal(stateWithTwoNodesAndTwoEdges.edges['edge1']);
+  });
+
+  it('should handle ids as arguments', () => {
+    expect(getEdgeWithLabelBetween(stateWithTwoNodesAndTwoEdges, 'KNOWS', '1', '2'))
     .to.equal(stateWithTwoNodesAndTwoEdges.edges['edge1']);
   });
 

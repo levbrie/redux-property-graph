@@ -23,7 +23,8 @@ const emptyGraph = {
 function createGraphReducer(config) {
 
   const getNodeId = (node) => {
-    return node[config.idPropertyName];
+    return typeof node === 'string' ?
+      node : node[config.idPropertyName];
   };
 
   return (state = emptyGraph, action) => {
@@ -61,8 +62,8 @@ function createGraphReducer(config) {
 
     function reduceAddEdge() {
       const edgeId = uuid.v1();
-      const sourceId = action.source[config.idPropertyName];
-      const targetId = action.target[config.idPropertyName];
+      const sourceId = getNodeId(action.source);
+      const targetId = getNodeId(action.target);
       return {
         ...state,
         edges: {
@@ -100,7 +101,7 @@ function createGraphReducer(config) {
     }
 
     function reduceRemoveNode() {
-      const nodeId = action.properties[config.idPropertyName];
+      const nodeId = getNodeId(action.properties);
       return {
         ...state,
         ...unlinkNode(nodeId),
@@ -109,7 +110,7 @@ function createGraphReducer(config) {
     }
 
     function reduceUnlinkNode() {
-      const nodeId = action.properties[config.idPropertyName];
+      const nodeId = getNodeId(action.properties);
       return {
         ...state,
         ...unlinkNode(nodeId)
@@ -143,8 +144,8 @@ function createGraphReducer(config) {
     }
 
     function reduceUnlinkTwo() {
-      const firstId = action.first[config.idPropertyName];
-      const secondId = action.second[config.idPropertyName];
+      const firstId = getNodeId(action.first);
+      const secondId = getNodeId(action.second);
       return {
         ...state,
         ...unlinkTwo(firstId, secondId)
@@ -206,6 +207,12 @@ function getNewEdgeMap(currentMap, edgeId, sourceId, targetId) {
 }
 
 function utilityFunctions(config) {
+
+  const getNodeId = (node) => {
+    return typeof node === 'string' ?
+      node : node[config.idPropertyName];
+  };
+  
   const { idPropertyName } = config;
 
   return {
@@ -226,9 +233,11 @@ function utilityFunctions(config) {
   }
 
   function getEdgesBetween(graph, start, end) {
-    if (start[idPropertyName] in graph.edgeMap
-        && end[idPropertyName] in graph.edgeMap[start[idPropertyName]]) {
-      const edgeList = graph.edgeMap[start[idPropertyName]][end[idPropertyName]];
+    const startId = getNodeId(start);
+    const endId = getNodeId(end);
+    if (startId in graph.edgeMap
+        && endId in graph.edgeMap[startId]) {
+      const edgeList = graph.edgeMap[startId][endId];
       return edgeList.map(function(edgeId) {
         return graph.edges[edgeId];
       });
@@ -237,7 +246,8 @@ function utilityFunctions(config) {
   }
 
   function getEdges(graph, obj) {
-    return _.transform(graph.edgeMap[obj[idPropertyName]], (result, v, k) => {
+    const nodeId = getNodeId(obj);
+    return _.transform(graph.edgeMap[nodeId], (result, v, k) => {
       const edge = graph.edges[v];
       result.push(edge);
       return result;
