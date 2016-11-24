@@ -25,7 +25,7 @@
   "dependencies": {
     "lodash.omit": "^4.5.0",
     "lodash.transform": "^4.6.0",
-    "node-uuid": "^1.4.7"
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",

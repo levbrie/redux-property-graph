@@ -1,4 +1,4 @@
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 import {
   ADD_NODE, ADD_EDGE, MODIFY_NODE,
   REMOVE_NODE, UNLINK_NODE, UNLINK_TWO
